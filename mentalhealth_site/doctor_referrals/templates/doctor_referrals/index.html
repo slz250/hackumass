@@ -1,5 +1,6 @@
 <ul>
-    {% for album in all_albums %}
-    <li><a href = "/music/{{ album.id }}">{{album.album_title}}</a></li>
+    {% for doc in storage %}
+    <li>name: {{doc.fname}} {{doc.lname}}<br>bio: {{doc.bio}}</li>
+    <br>
     {% endfor %}
 </ul>

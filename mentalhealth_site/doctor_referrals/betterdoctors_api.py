@@ -16,15 +16,21 @@ def betterdoctor_search(latlng, apiKey):
     json_obj = urllib2.urlopen(finalUrl)
     data = json.load(json_obj)
     dataJSON = data["data"]
+    storage = []
     for docInfo in dataJSON:
         profile = docInfo["profile"]
-        # print(profile)
         fname = profile["first_name"]
         lname = profile["last_name"]
         bio = profile["bio"]
-        print(fname + " " + lname + "\n" + bio + "\n\n\n")
+        storage.append({
+            "fname": fname,
+            "lname": lname,
+            "bio": bio
+        })
+        # print(fname + " " + lname + "\n" + bio + "\n\n\n")
+    return storage
 
-if __name__ == "__main__":
+def betterdoctor_searchDriver():
     betterdoctor_api = "349beaed7c0fbb0a3384f8e45209205a"
     g = geocoder.ip("me")
-    betterdoctor_search(g.latlng, betterdoctor_api)
+    return betterdoctor_search(g.latlng, betterdoctor_api)
