@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "doctor_referrals"
+    'doctor_referrals',
+    'analyze_tone_from_voice',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
