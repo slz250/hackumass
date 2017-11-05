@@ -9,21 +9,48 @@ import requests
 import json
 from os.path import join, dirname
 from watson_developer_cloud import ToneAnalyzerV3
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status, generics
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Depression, Stress, Person2
+from .serializers import DepressionSerializer, StressSerializer, Person2Serializer
 
 
 
 # Create your views here.
 
-class PostUserData(generics.ListCreateAPIView):
+class PostUserData(APIView):
+    #@api_view(['GET', 'POST', ])
     @csrf_exempt
-    def post(request, format=None):
+    def post(request, format = None):
         html_response = request.POST
-        print(request.POST)
-        return HttpResponse(html_response)
+        response_dict = dict(request.POST)
+        string = ''
+        for item in response_dict:
+            string += str(item)+" : "+str(response_dict[item][0])+"\n"
+        comment = response_dict['question_2'][0]
+        sentiment = get_tone(comment)
+        #response_string = "<h1>Hi based on your comment, \'"+comment+"\' it seems like you feeling "+sentiment+" today</h1>"
+        response_dict = {}
+        response_dict['comment'] = comment
+        response_dict['sentiment'] = sentiment
+        print(sentiment)
+        if sentiment == 'Sadness':
+            serializer = DepressionSerializer(Depression.objects.all(), many=True)
+            for item in Depression.objects.all():
+                response_dict[item.id] = item.link
+        if sentiment == 'Anger':
+            serializer = StressSerializer(Stress.objects.all(), many=True)
+            for item in Stress.objects.all():
+                response_dict[item.id] = item.link
 
+        return HttpResponse(json.dumps(response_dict), content_type="application/json")
+        #return HttpResponse(serializer)
 
 def index(request):
     text_from_audio = get_text_from_audio()
