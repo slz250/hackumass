@@ -18,6 +18,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Depression, Stress, Person2
+from analyze_tone_from_voice.classifier.classifier import Classifier
+
 from .serializers import DepressionSerializer, StressSerializer, Person2Serializer
 
 
@@ -33,23 +35,33 @@ class PostUserData(APIView):
         string = ''
         for item in response_dict:
             string += str(item)+" : "+str(response_dict[item][0])+"\n"
+            print(item)
         comment = response_dict['question_2'][0]
         sentiment = get_tone(comment)
-        #response_string = "<h1>Hi based on your comment, \'"+comment+"\' it seems like you feeling "+sentiment+" today</h1>"
+
         response_dict = {}
         response_dict['comment'] = comment
-        response_dict['sentiment'] = sentiment
-        print(sentiment)
+        ret_str="<head><link rel=\"stylesheet\" href=\"assets/bootstrap/css/bootstrap.min.css\"><link rel=\"stylesheet\" href=\"assets/flat-icon/flaticon.css\"><link rel=\"stylesheet\" href=\"temp/styles/styles.css\"></head>"
+        ret_str += '<h1> Analysis of Results </h1>'
+        ret_str += '<br>Comment made by user : ' + comment + "</br>"
         if sentiment == 'Sadness':
-            serializer = DepressionSerializer(Depression.objects.all(), many=True)
+            response_dict['sentiment'] = 'Depression'
+            ret_str += "<br>Precited mental disorder from comment : <b>Depression</b> </br><h1>Useful Coping resources</h1>"
             for item in Depression.objects.all():
                 response_dict[item.id] = item.link
-        if sentiment == 'Anger':
-            serializer = StressSerializer(Stress.objects.all(), many=True)
+                ret_str += "<br><a href=\"" + item.link + "\">" + item.link + "</a></br>"
+
+        elif sentiment == 'Anger':
+            response_dict['sentiment'] = 'Stress'
+            ret_str += "<br>Precited mental disorder from comment : <b>Stress</b> </br><h1>Useful Coping resources</h1>"
             for item in Stress.objects.all():
                 response_dict[item.id] = item.link
+                ret_str += "<br><a href=\"" + item.link + "\">"+item.link+"</a></br>"
+        else:
+            ret_str +="The user seems okay and not in need of any serious help"
 
-        return HttpResponse(json.dumps(response_dict), content_type="application/json")
+        return HttpResponse(ret_str)
+        #return HttpResponse(json.dumps(response_dict), content_type="application/json")
         #return HttpResponse(serializer)
 
 def index(request):
@@ -58,6 +70,10 @@ def index(request):
     tone = get_tone(text_from_audio)
     html_response = "<h1>Welome to Voice Analysis, your predicted tone is:" + tone + "</h1>"
     return HttpResponse(html_response)
+
+def nb(text):
+    classifier = Classifier('analyze_tone_from_voice/classifier/classifier/data.p')
+    print(classifier.predict('I have ptsd'))
 
 
 def get_text_from_audio():
