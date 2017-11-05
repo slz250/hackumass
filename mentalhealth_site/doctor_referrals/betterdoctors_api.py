@@ -1,7 +1,7 @@
 #api demo
 
-# from urllib.request import urlopen
-from urllib2 import urlopen
+from urllib.request import urlopen
+#from urllib2 import urlopen
 import json
 import geocoder
 from random import randint
