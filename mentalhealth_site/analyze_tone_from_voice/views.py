@@ -5,26 +5,41 @@ import os
 from google.cloud import speech
 from google.cloud.speech import enums
 from google.cloud.speech import types
+import requests
 import json
 from os.path import join, dirname
 from watson_developer_cloud import ToneAnalyzerV3
+from rest_framework.response import Response
+from rest_framework import status, generics
+from django.views.decorators.csrf import csrf_exempt
+
+
 
 # Create your views here.
+
+class PostUserData(generics.ListCreateAPIView):
+    @csrf_exempt
+    def post(request, format=None):
+        html_response = request.POST
+        print(request.POST)
+        return HttpResponse(html_response)
+
+
 def index(request):
     text_from_audio = get_text_from_audio()
-    print("******The text converted audio is:$$$$$$$", text_from_audio)
+    print("The type of object is :", request.body)
     tone = get_tone(text_from_audio)
-    html_response = "<h1>Welome to Voice Analysis, your predicted tone is:"+tone+"</h1>"
+    html_response = "<h1>Welome to Voice Analysis, your predicted tone is:" + tone + "</h1>"
     return HttpResponse(html_response)
 
 
 def get_text_from_audio():
-    print('******The current working directory is****:')
-    os.system('pwd')
     os.system(
         "export GOOGLE_APPLICATION_CREDENTIALS='analyze_tone_from_voice/Google_cloud_key/My_First_Project_926af8a5744c.json'")
-    os.system('ffmpeg -i analyze_tone_from_voice/input.m4a -acodec libmp3lame -ab 128k analyze_tone_from_voice/input.mp3')
-    os.system('sox analyze_tone_from_voice/input.mp3 --rate 16k --bits 16 --channels 1 analyze_tone_from_voice/input.flac')
+    os.system(
+        'ffmpeg -i analyze_tone_from_voice/input.m4a -acodec libmp3lame -ab 128k analyze_tone_from_voice/input.mp3')
+    os.system(
+        'sox analyze_tone_from_voice/input.mp3 --rate 16k --bits 16 --channels 1 analyze_tone_from_voice/input.flac')
 
     # Instantiates a client
     client = speech.SpeechClient()
@@ -54,14 +69,11 @@ def get_text_from_audio():
     return text
 
 
-
 def get_tone(input):
     tone_analyzer = ToneAnalyzerV3(
         username='d2bb67f8-01c6-46f6-86c3-169179260d14',
         password='ipQZoxFok1Jx',
         version='2016-05-19')
-
-
 
     tones = tone_analyzer.tone(text=input)['document_tone']['tone_categories'][0]['tones']
 
@@ -73,8 +85,6 @@ def get_tone(input):
 
     predicted_tone = sorted(zip(tone_name, score), key=lambda x: x[1], reverse=True)
 
-    #print ("The emotion you are feeling is  : ", predicted_tone[0][0])
+    # print ("The emotion you are feeling is  : ", predicted_tone[0][0])
     tone = predicted_tone[0][0]
     return tone
-
-
