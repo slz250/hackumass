@@ -19,4 +19,5 @@ from django.contrib import admin
 urlpatterns = [
     url(r"^doctor_referrals/", include("doctor_referrals.urls")),
     url(r'^admin/', admin.site.urls),
+    url(r'^voice_tone_analysis/', include("analyze_tone_from_voice.urls")),
 ]

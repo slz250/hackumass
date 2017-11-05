@@ -1,6 +1,6 @@
 #api demo
 
-import urllib2
+from urllib.request import urlopen
 import json
 import geocoder
 
@@ -13,7 +13,7 @@ def betterdoctor_search(latlng, apiKey):
     locationUrl = "&location=" + latlngUrl + "%2C100&user_location=" + latlngUrl
     finalUrl = url + locationUrl + "&skip=0&limit=10"
     print(finalUrl)
-    json_obj = urllib2.urlopen(finalUrl)
+    json_obj = urlopen(finalUrl)
     data = json.load(json_obj)
     dataJSON = data["data"]
     storage = []
