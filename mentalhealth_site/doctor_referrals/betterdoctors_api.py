@@ -20,6 +20,17 @@ def betterdoctor_search(latlng, apiKey):
     dataJSON = data["data"]
     storage = []
     for docInfo in dataJSON:
+        practice = docInfo["practices"]
+        practiceName = practice[0]["name"]
+        address = practice[0]["visit_address"]
+        street = address["street"]
+        city = address["city"]
+        state = address["state"]
+        zip = address["zip"]
+
+        phones = practice[0]["phones"]
+        pNumber = phones[0]["number"]
+
         profile = docInfo["profile"]
         fname = profile["first_name"]
         lname = profile["last_name"]
@@ -27,7 +38,13 @@ def betterdoctor_search(latlng, apiKey):
         storage.append({
             "fname": fname,
             "lname": lname,
-            "bio": bio
+            "bio": bio,
+            "practice name": practiceName,
+            "street": street,
+            "city": city,
+            "state": state,
+            "zip": zip,
+            "phone": pNumber
         })
     return storage
 
