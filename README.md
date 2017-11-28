@@ -1,4 +1,6 @@
-# hackumass is the best !!! cheers !!!
+# HackUMass: WeCare.com
+
+WeCare.com is a mental illness classifier platform for individuals and families affected by mental illness to have a better understanding of their mental health condition and reach possible solutions easily. 
 
 Instruction:
 Before running server please export path of json google cloud api service credentials file. This can be done by running the shell command as follows :
